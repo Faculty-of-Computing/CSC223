@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+   <link rel="icon" href="vb.webp">
+  <meta charset="UTF-8">
+  <title> COS121 Fun Practice</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bulma/0.8.0/css/bulma.min.css'>
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css'>
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'><link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<section id="app" class="hero is-warning is-fullheight">
+
+   <!--heroBody-->
+   <div class="hero-body">
+
+      <!--container-->
+      <div class="container is-fluid">
+
+         <!--columns-->
+         <div class="cont is-centered is-marginless is-paddingless box">
+
+            <!--sidebar-->
+            <div class="column is-5 sidebar">
+               <div class="sidebarContainer">
+
+                  <div class="tags is-marginless">
+                     <span class="tag is-medium is-rounded">COS121</span>
+                     <span class="tag is-medium is-rounded">Practice is fun</span>
+                  </div>
+
+                  <!-- title -->
+                  <h1 class="title is-2">Practice Made Easy</h1>
+                  <h2 class="subtitle is-5"><i>A COS121 Exams Practice Questions.</i></h2>
+
+                  <!-- description -->
+                  <p class="subtitle is-6 has-text-justified">For Comrades <em> Writing</em> <em>COS121</em> In The Upcoming Second Semester Exam <br><em> Built and Design</em> By <br><em> The Chairman and The  D.O.S(Software)</em> <br> For 0'22/0'23 Series Computer Science</p>
+               </div>
+
+               <div class="sidebarFooter">
+                  <!-- <p>Photo by <a href="https://unsplash.com/@debidiemski">Deborah Diem</a></p> -->
+               </div>
+            </div>
+            <!--/sidebar-->
+
+            <!--questionBox-->
+            <div class="column is-7 questionBox is-paddingless is-marginless">
+
+               <!-- transition -->
+               <transition enter-active-class="animated jackInTheBox" leave-active-class="animated zoomOut" mode="out-in">
+
+                  <div v-if="!quizStarted" v-bind:key="quizStarted" class="quizForm">
+                     <div class="titleContainer">
+                        <h2 class="title is-4">Getting Started</h2>
+                     </div>
+
+                     <div class="quizFormContainer">
+                        <div class="field">
+                           <div class="field-label is-normal is-size-5">
+                              <label class="label">Name</label>
+                           </div>
+                           <div class="control">
+                              <input class="input is-rounded" type="text" v-model="quiz.user" placeholder="Enter your name" required>
+                           </div>
+                        </div>
+                        <div class="field">
+                           <div class="field-label is-normal is-size-5">
+                              <label class="label">Difficulty</label>
+                           </div>
+                        
+                        <div class="control">
+                          <label class="radio">
+                            <input type="radio" name="0" checked>
+                            Easy
+                          </label>
+                          <label class="radio">
+                            <input type="radio" name="1">
+                            Medium
+                          </label>
+                           <label class="radio">
+                            <input type="radio" name="2">
+                            Hard
+                          </label>
+                        </div>
+                        </div>
+
+                        <a class="pagination-previous button is-medium is-info is-rounded is-outlined is-pulled-right" v-on:click="if(quiz.user.length>0){quizStarted=!quizStarted}" style="margin-bottom:12px">
+                    Start
+                  </a>
+                     </div>
+                  </div>
+
+                  <!--qusetionContainer-->
+                  <div class="questionContainer" v-if="questionIndex<quiz.questions.length && quizStarted" v-bind:key="questionIndex">
+
+                     <!-- questionTitle -->
+                     <div class="titleContainer">
+                        <h2 class="title is-5">{{questionIndex+1}}. {{ quiz.questions[questionIndex].text }}</h2>
+                     </div>
+
+                     <!-- quizOptions -->
+                     <div class="optionContainer">
+                        <div class="option" v-for="(response, index) in quiz.questions[questionIndex].responses" @click="selectOption(index)" :class="{ 'is-selected': userResponses[questionIndex] == index}" :key="index">
+                           {{ index | charIndex }}. {{ response.text }}
+                        </div>
+                     </div>
+
+                     <!--quizFooter: navigation and progress-->
+                     <div class="questionFooter">
+
+                        <!--pagination-->
+                        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+
+                           <!-- prevButton -->
+                           <a class="pagination-previous button is-info is-rounded is-outlined" v-on:click="prev();" :disabled="questionIndex < 1">
+                    Previous Question
+                  </a>
+
+                           <!-- prevButton -->
+                           <a class="pagination-next button is-info is-rounded" v-on:click="next();" :disabled="questionIndex>=quiz.questions.length">
+                    {{ (userResponses[questionIndex]==null)?'Skip':'Next' }} Question
+                  </a>
+
+                        </nav>
+                        <!--/pagination-->
+
+                        <!--progress-->
+                        <div class="progressContainer">
+                           <progress class="progress is-success is-small" :value="(questionIndex/quiz.questions.length)*100" max="100">{{(questionIndex/quiz.questions.length)*100}}%</progress>
+                        </div>
+                        <!--/progress-->
+
+                     </div>
+                     <!--/quizFooter-->
+
+                  </div>
+                 
+
+                  <!--quizCompletedResult-->
+                  <div v-if="questionIndex >= quiz.questions.length && quizStarted" v-bind:key="questionIndex" class="quizCompleted has-text-centered">
+
+                     <!-- quizCompletedIcon: Achievement Icon -->
+                     <span class="icon is-large has-text-success">
+                <i class="fa fa-check-circle-o fa-3x"></i>
+              </span>
+
+                     <!--resultTitleBlock-->
+                     <h2 class="title">
+                        Congratulations! <br>
+                        Wishing You Exams Success
+                     </h2>
+                     <p class="subtitle">
+                        Total score: {{ score() }} / {{ quiz.questions.length }}
+                     </p>
+                     <div style="text-align: left;" class="answers">
+                        <div v-for="(question, index) in questions" :key="index">
+                            <!-- <h4>Question {{ index + 1 }}</h4> -->
+                            <p> {{ index + 1 }}. {{ question.text }}</p>
+                            <div v-for="(option, i) in question.responses" :key="i">
+                                <p>
+                                    {{ i === 0 ? '(a)' : i === 1 ? '(b)' : i === 2 ? '(c)' : '(d)' }} {{ option.text }}
+                                    <strong :style="{ color: option.correct ? 'green' : 'red' }">
+                                        {{ option.correct ? ": correct" : ": wrong" }}
+                                    </strong>
+                                </p>
+                            </div>
+                            <br>
+                        </div>
+                     
+                     <!--/resultTitleBlock-->
+
+                  </div>
+                  <!--/quizCompetedResult-->
+
+               </transition>
+
+            </div>
+            <!--/questionBox-->
+
+         </div>
+         <!--/columns-->
+
+      </div>
+      <!--/container-->
+
+   </div>
+   <!--/heroBody-->
+
+</section>
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script><script  src="./script.js"></script>
+
+</body>
+</html>
