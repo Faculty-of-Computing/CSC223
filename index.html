@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" href="vb.webp">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CSC 223 - Fun Practice</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="vb.webp">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.8.0/css/bulma.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
@@ -12,111 +12,119 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <section id="app" class="hero is-fullheight">
+    <div class="hero-body">
+      <div class="container is-fluid">
+        <div class="cont box is-marginless is-paddingless">
 
-<section id="app" class="hero is-warning is-fullheight">
-  <div class="hero-body">
-    <div class="container is-fluid">
-
-      <div class="cont is-centered is-marginless is-paddingless">
-        <!-- Sidebar -->
-        <div class="column is-5 sidebar">
-          <div class="sidebarContainer">
-            <div class="tags is-marginless">
-              <span class="tag is-medium is-rounded">CSC223</span>
-              <span class="tag is-medium is-rounded">Practice is fun</span>
+          <!-- Sidebar -->
+          <div class="column is-5 sidebar">
+            <div class="sidebarContainer">
+              <div class="tags is-marginless">
+                <span class="tag is-medium is-rounded">CSC223</span>
+                <span class="tag is-medium is-rounded">Practice is fun</span>
+              </div>
+              <h1 class="title is-2">Practice Made Easy</h1>
+              <h2 class="subtitle is-5"><i>A CSC223 Practice Questions.</i></h2>
+              <p class="subtitle is-6 has-text-justified">
+                For Comrades <em>Writing CSC223</em> In The Upcoming Second Semester Exam <br>
+                <em>Built and Designed</em> By <br>
+                <em>The Director Of Software</em> <br>
+                For 0'22/0'23 Series Computer Science
+              </p>
             </div>
-            <h1 class="title is-2">Practice Made Easy</h1>
-            <h2 class="subtitle is-5"><i>A CSC223 Practice Questions.</i></h2>
-            <p class="subtitle is-6 has-text-justified">
-              For Comrades <em>Writing</em> <em>CSC223</em> In The Upcoming Second Semester Exam<br>
-              <em>Built and Designed</em> By <br><em>The Director Of Software</em><br>
-              For 0'22/0'23 Series Computer Science
-            </p>
           </div>
-        </div>
 
-        <!-- Quiz Box -->
-        <div class="column is-7 questionBox is-paddingless is-marginless">
+          <!-- Quiz Box -->
+          <div class="column is-7 questionBox is-paddingless is-marginless">
+            <transition enter-active-class="animated fadeIn" mode="out-in">
 
-          <transition enter-active-class="animated jackInTheBox" leave-active-class="animated zoomOut" mode="out-in">
-            <div v-if="!quizStarted" v-bind:key="quizStarted" class="quizForm">
-              <div class="titleContainer">
-                <h2 class="title is-4">Getting Started</h2>
+              <!-- Landing Screen -->
+              <div v-if="!quizStarted && !showForm" class="startScreen">
+                <h1 class="title">Welcome to CSC223 Practice Quiz</h1>
+                <button class="button is-info is-medium is-rounded" @click="showForm = true">Start Quiz</button>
               </div>
 
-              <div class="quizFormContainer">
-                <div class="field">
-                  <label class="label">Name</label>
-                  <div class="control">
-                    <input class="input is-rounded" type="text" v-model="quiz.user" placeholder="Enter your name" required>
+              <!-- User Form -->
+              <div v-else-if="!quizStarted && showForm" class="quizForm">
+                <div class="titleContainer">
+                  <h2 class="title is-4">Getting Started</h2>
+                </div>
+                <div class="quizFormContainer">
+                  <div class="field">
+                    <label class="label">Name</label>
+                    <div class="control">
+                      <input class="input is-rounded" type="text" v-model="quiz.user" placeholder="Enter your name" required>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label class="label">Difficulty</label>
+                    <div class="control">
+                      <label class="radio"><input type="radio" name="difficulty" checked> Easy</label>
+                      <label class="radio"><input type="radio" name="difficulty"> Medium</label>
+                      <label class="radio"><input type="radio" name="difficulty"> Hard</label>
+                    </div>
+                  </div>
+
+                  <a class="button is-medium is-info is-rounded is-outlined is-pulled-right" @click="if(quiz.user.length > 0) quizStarted = true" style="margin-top: 20px;">
+                    Continue
+                  </a>
+                </div>
+              </div>
+
+              <!-- Quiz Question -->
+              <div class="questionContainer" v-else-if="questionIndex < quiz.questions.length && quizStarted">
+                <div class="titleContainer">
+                  <h2 class="title is-5">{{ questionIndex + 1 }}. {{ quiz.questions[questionIndex].text }}</h2>
+                </div>
+
+                <div class="optionContainer">
+                  <div class="option" v-for="(response, index) in quiz.questions[questionIndex].responses"
+                    @click="selectOption(index)"
+                    :class="{ 'is-selected': userResponses[questionIndex] === index }"
+                    :key="index">
+                    {{ index | charIndex }}. {{ response.text }}
                   </div>
                 </div>
 
-                <div class="field">
-                  <label class="label">Difficulty</label>
-                  <div class="control">
-                    <label class="radio"><input type="radio" name="difficulty" checked> Easy</label>
-                    <label class="radio"><input type="radio" name="difficulty"> Medium</label>
-                    <label class="radio"><input type="radio" name="difficulty"> Hard</label>
+                <div class="questionFooter">
+                  <nav class="pagination is-centered">
+                    <a class="pagination-previous button is-info is-rounded is-outlined"
+                      @click="prev" :disabled="questionIndex < 1">Previous Question</a>
+                    <a class="pagination-next button is-info is-rounded"
+                      @click="next" :disabled="questionIndex >= quiz.questions.length">
+                      {{ userResponses[questionIndex] == null ? 'Skip' : 'Next' }} Question
+                    </a>
+                  </nav>
+                  <div class="progressContainer">
+                    <progress class="progress is-success is-small"
+                      :value="(questionIndex / quiz.questions.length) * 100"
+                      max="100">
+                      {{ (questionIndex / quiz.questions.length) * 100 }}%
+                    </progress>
                   </div>
                 </div>
-
-                <a class="button is-medium is-info is-rounded is-outlined is-pulled-right" v-on:click="if(quiz.user.length>0){quizStarted=!quizStarted}" style="margin-top: 20px;">
-                  Start
-                </a>
-              </div>
-            </div>
-
-            <div class="questionContainer" v-if="questionIndex < quiz.questions.length && quizStarted" v-bind:key="questionIndex">
-              <div class="titleContainer">
-                <h2 class="title is-5">{{questionIndex+1}}. {{ quiz.questions[questionIndex].text }}</h2>
               </div>
 
-              <div class="optionContainer">
-                <div class="option" v-for="(response, index) in quiz.questions[questionIndex].responses"
-                  @click="selectOption(index)"
-                  :class="{ 'is-selected': userResponses[questionIndex] == index }"
-                  :key="index">
-                  {{ index | charIndex }}. {{ response.text }}
-                </div>
+              <!-- Completion -->
+              <div v-else-if="questionIndex >= quiz.questions.length && quizStarted" class="quizCompleted has-text-centered">
+                <span class="icon is-large has-text-success">
+                  <i class="fa fa-check-circle-o fa-3x"></i>
+                </span>
+                <h2 class="title">Congratulations!<br>Wishing You Exams Success</h2>
+                <p class="subtitle">Total score: {{ score() }} / {{ quiz.questions.length }}</p>
               </div>
 
-              <div class="questionFooter">
-                <nav class="pagination is-centered" role="navigation">
-                  <a class="pagination-previous button is-info is-rounded is-outlined" v-on:click="prev()" :disabled="questionIndex < 1">
-                    Previous Question
-                  </a>
-                  <a class="pagination-next button is-info is-rounded" v-on:click="next()" :disabled="questionIndex >= quiz.questions.length">
-                    {{ (userResponses[questionIndex]==null) ? 'Skip' : 'Next' }} Question
-                  </a>
-                </nav>
-
-                <div class="progressContainer">
-                  <progress class="progress is-success is-small" :value="(questionIndex/quiz.questions.length)*100" max="100">
-                    {{(questionIndex/quiz.questions.length)*100}}%
-                  </progress>
-                </div>
-              </div>
-            </div>
-
-            <div v-if="questionIndex >= quiz.questions.length && quizStarted" class="quizCompleted has-text-centered">
-              <span class="icon is-large has-text-success">
-                <i class="fa fa-check-circle-o fa-3x"></i>
-              </span>
-              <h2 class="title">Congratulations!<br>Wishing You Exams Success</h2>
-              <p class="subtitle">Total score: {{ score() }} / {{ quiz.questions.length }}</p>
-            </div>
-          </transition>
+            </transition>
+          </div>
 
         </div>
       </div>
-
     </div>
-  </div>
-</section>
+  </section>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js"></script>
-<script src="script.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

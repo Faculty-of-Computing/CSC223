@@ -323,4 +323,3 @@ var app = new Vue({
       }
       return score;
     } } });
-
